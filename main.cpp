@@ -382,8 +382,7 @@ if (total == 0){
     for (int i = 0; i < ALPHABET_SIZE; i++){
         if (counts[i] > 0){
             double percent = 100.0 * counts[i]/total;
-            outStream << static_cast<char>('A'+i)
-            <<std::setw(6) << static_cast<char>('A' + i)
+            outStream <<std::setw(6) << static_cast<char>('A' + i)
             << std::setw(7) << counts[i]
             <<std::setw(8) << percent << '%' << std::endl;
         }
@@ -393,7 +392,7 @@ char ranked[ALPHABET_SIZE];
 rankLetters(counts, ranked);
 
 outStream << "Total letters: "<< total << std::endl;
-outStream << "Most frequent: ";
+outStream << "Most frequent:";
 for (int i = 0; i < TOP_LETTERS; i++){
     if(counts[ranked[i] - 'A'] > 0){
         outStream << " " << ranked[i];
