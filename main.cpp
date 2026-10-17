@@ -218,7 +218,7 @@ void openInputFile(std::ifstream& inStream, const std::string& fileName)
 {
     inStream.open(fileName);
     if (inStream.fail()){
-        std::cout << "Input File opening failed: " << fileName << std::endl;
+        std::cout << "Input file opening failed: " << fileName << std::endl;
         std::exit(1);
     }
 }
@@ -376,15 +376,16 @@ if (total == 0){
     outStream << "No letters found." << std::endl;
     return;}
 
-    outStream << "Letter Count Percent" << std::endl;
+    outStream <<"Letter  Count  Percent"<< std::endl;
 
     outStream << std::fixed << std::setprecision(2);
     for (int i = 0; i < ALPHABET_SIZE; i++){
         if (counts[i] > 0){
             double percent = 100.0 * counts[i]/total;
             outStream << static_cast<char>('A'+i)
-            << std::setw(10) << counts[i]
-            <<std::setw(9) << percent << '%' << std::endl;
+            <<std::setw(6) << static_cast<char>('A' + i)
+            << std::setw(7) << counts[i]
+            <<std::setw(8) << percent << '%' << std::endl;
         }
 }
 
@@ -392,7 +393,13 @@ char ranked[ALPHABET_SIZE];
 rankLetters(counts, ranked);
 
 outStream << "Total letters: "<< total << std::endl;
-outStream << "Most frequent: "<< ranked[0] << std::endl;
+outStream << "Most frequent: ";
+for (int i = 0; i < TOP_LETTERS; i++){
+    if(counts[ranked[i] - 'A'] > 0){
+        outStream << " " << ranked[i];
+    }
+}
+outStream << std::endl;
 }
 
 // TODO 10: transformText
