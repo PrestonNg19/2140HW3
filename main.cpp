@@ -218,7 +218,7 @@ void openInputFile(std::ifstream& inStream, const std::string& fileName)
 {
     inStream.open(fileName);
     if (inStream.fail()){
-        std::cout << "Input File opening failed: " << fileName << endl;
+        std::cout << "Input File opening failed: " << fileName << std::endl;
         std::exit(1);
     }
 }
