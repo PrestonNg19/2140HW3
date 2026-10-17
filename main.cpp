@@ -1,8 +1,8 @@
 /*
- * Full Name:     [Your Name]
- * Student ID:    [Your NUID]
+ * Full Name:     [Preston Ng]
+ * Student ID:    [002096670]
  * Course:        EECE 2140 - Computing Fundamentals for Engineers
- * Section:       [Your Section]
+ * Section:       [05]
  * Semester:      Fall 2026
  * Assignment:    Homework 3 - Secret Message Decoder
  * Compilation:   g++ -std=c++11 main.cpp -o main
@@ -196,7 +196,14 @@ int main()
 //               unchanged.
 char shiftLetter(char ch, int shift)
 {
-    return '\0';
+    if (ch >= 'A' && ch <= 'Z')
+    {
+    return static_cast<char>('A' + (ch - 'A' + shift)%26);}
+    if (ch >= 'a' && ch <= 'z'){
+        return static_cast<char>('a' + (ch - 'a' + shift)%26);
+    }
+
+    return ch;
 }
 
 // TODO 2: openInputFile
@@ -209,6 +216,11 @@ char shiftLetter(char ch, int shift)
 //               with exit status 1.
 void openInputFile(std::ifstream& inStream, const std::string& fileName)
 {
+    inStream.open(fileName);
+    if (inStream.fail()){
+        std::cout << "Input File opening failed: " << fileName << endl;
+        std::exit(1);
+    }
 }
 
 // TODO 3: openOutputFile
@@ -226,6 +238,17 @@ void openInputFile(std::ifstream& inStream, const std::string& fileName)
 //               with exit status 1.
 void openOutputFile(std::ofstream& outStream, const std::string& fileName, bool append)
 {
+    if (append)
+    {
+        outStream.open(fileName, std::ios::app);
+    }
+    else{
+        outStream.open(fileName);
+    }
+    if (outStream.fail()){
+        std::cout << "Output file opening failed: " << fileName << std::endl;
+        std::exit(1);
+    }
 }
 
 // TODO 4: countLetters
@@ -242,6 +265,19 @@ void openOutputFile(std::ofstream& outStream, const std::string& fileName, bool 
 //               before the call. Does not close the stream.
 void countLetters(std::istream& inStream, int counts[])
 {
+    for (int i = 0; i < ALPHABET_SIZE; i++){
+        counts[i] = 0;
+    }
+
+    char ch;
+    while (inStream.get(ch)){
+        if (ch >= 'A' && ch <= 'Z'){
+            counts[ch - 'A']++;
+        }
+        else if (ch >= 'a' && ch <= 'z'){
+            counts[ch - 'a']++;
+        }
+    }
 }
 
 // TODO 5: sumArray
@@ -251,7 +287,11 @@ void countLetters(std::istream& inStream, int counts[])
 //               is 0.
 int sumArray(const int a[], int size)
 {
-    return -1;
+    int total =0;
+    for (int i =0; i < size; i++){
+        total += a [i];
+    }
+    return total;
 }
 
 // TODO 6: indexOfLargest
@@ -262,7 +302,13 @@ int sumArray(const int a[], int size)
 //               smallest such index is returned.
 int indexOfLargest(const int a[], int size)
 {
-    return -1;
+    int best = 0;
+    for (int i = 1; i <size; i++){
+        if (a[i] > a[best]){
+            best = i;
+        }
+    }
+    return best;
 }
 
 // TODO 7: rankLetters
@@ -275,6 +321,16 @@ int indexOfLargest(const int a[], int size)
 //               appear in alphabetical order.
 void rankLetters(const int counts[], char ranked[])
 {
+    int remaining[ALPHABET_SIZE];
+    for (int i = 0; i < ALPHABET_SIZE; i++)
+    {
+        remaining[i] = counts[i];
+    }
+    for (int pos = 0; pos < ALPHABET_SIZE; pos++){
+        int idx = indexOfLargest(remaining, ALPHABET_SIZE);
+        ranked[pos] = static_cast<char>('A' + idx);
+        remaining[idx] = -1;
+    }
 }
 
 // TODO 8: guessShift
@@ -286,7 +342,15 @@ void rankLetters(const int counts[], char ranked[])
 //               count is 0. Must call sumArray and indexOfLargest.
 int guessShift(const int counts[])
 {
-    return -1;
+    if(sumArray(counts, ALPHABET_SIZE) == 0){
+        return 0;
+    }
+
+    int idx = indexOfLargest(counts, ALPHABET_SIZE);
+    int commonIDX = MOST_COMMON_LETTER - 'A';
+    return (idx - commonIDX + ALPHABET_SIZE) % ALPHABET_SIZE;
+
+
 }
 
 // TODO 9: printFrequencyReport
@@ -306,6 +370,29 @@ int guessShift(const int counts[])
 //               Must call sumArray and rankLetters.
 void printFrequencyReport(std::ostream& outStream, const int counts[])
 {
+    int total = sumArray(counts, ALPHABET_SIZE);
+
+if (total == 0){
+    outStream << "No letters found." << std::endl;
+    return;}
+
+    outStream << "Letter Count Percent" << std::endl;
+
+    outStream << std::fixed << std::setprecision(2);
+    for (int i = 0; i < ALPHABET_SIZE; i++){
+        if (counts[i] > 0){
+            double percent = 100.0 * counts[i]/total;
+            outStream << static_cast<char>('A'+i)
+            << std::setw(10) << counts[i]
+            <<std::setw(9) << percent << '%' << std::endl;
+        }
+}
+
+char ranked[ALPHABET_SIZE];
+rankLetters(counts, ranked);
+
+outStream << "Total letters: "<< total << std::endl;
+outStream << "Most frequent: "<< ranked[0] << std::endl;
 }
 
 // TODO 10: transformText
@@ -322,5 +409,13 @@ void printFrequencyReport(std::ostream& outStream, const int counts[])
 //   Returns:    The number of letters that were read (and shifted).
 int transformText(std::istream& inStream, std::ostream& outStream, int shift)
 {
-    return -1;
+    int letterCount = 0;
+    char ch;
+    while (inStream.get(ch)){
+        if ((ch >= 'A'&& ch <= 'Z')||(ch >= 'a' && ch <= 'z')){
+            letterCount++;
+        }
+        outStream.put(shiftLetter(ch, shift));
+    }
+    return letterCount;
 }
